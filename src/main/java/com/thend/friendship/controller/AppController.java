@@ -26,6 +26,6 @@ public class AppController {
 	
 	@RequestMapping("/user")
 	User user() {
-		return appService.getUserById(1L);
+		return appService.getCachedUserById(1L);
 	}
 }

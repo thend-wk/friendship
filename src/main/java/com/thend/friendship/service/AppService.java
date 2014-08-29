@@ -6,6 +6,6 @@ public interface AppService {
 	
 	public void print();
 	
-	public User getUserById(long userId);
+	public User getCachedUserById(long userId);
 
 }
