@@ -13,7 +13,7 @@ import com.thend.friendship.dao.AppDao;
 import com.thend.friendship.po.User;
 import com.thend.friendship.service.AppService;
 import com.thend.friendship.utils.Const;
-import com.thend.friendship.utils.Serializer;
+import com.thend.friendship.utils.JsonSerializer;
 @Service
 public class AppServiceImpl implements AppService {
 	
@@ -34,11 +34,11 @@ public class AppServiceImpl implements AppService {
 		try {
 			String cachekey = Const.getUserCacheKey(userId);
 			if(shardedJedis.exists(cachekey)) {
-				return Serializer.fromJson(shardedJedis.get(cachekey), User.class);
+				return JsonSerializer.fromJson(shardedJedis.get(cachekey), User.class);
 			} else {
 				User user = appDao.getUserById(userId);
 				if(user != null) {
-					shardedJedis.set(cachekey, Serializer.toJson(user));
+					shardedJedis.set(cachekey, JsonSerializer.toJson(user));
 					return user;
 				}
 			}
