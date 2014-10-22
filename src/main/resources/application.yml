@@ -13,10 +13,13 @@ tomcat:
   basedir: 
   backgroundProcessorDelay: 30 # secs
 jdbc:
+  masterUrl: jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull
+  masterUsername: root
+  masterPassword: 123456
+  slaveUrl: jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull
+  slaveUsername: root
+  slavePassword: 123456
   driver: com.mysql.jdbc.Driver
-  url: jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull
-  username: root
-  password: q1w2e3r4
   maxIdleTime: 25000
   minPoolSize: 10
   maxPoolSize: 50
@@ -30,3 +33,5 @@ redis:
   maxWaitMillis: 2000
   testOnBorrow: true
   clusters: localhost:6379
+mongo:
+  mongoUrl: mongodb://test:test@123.58.179.105:20998/gendata

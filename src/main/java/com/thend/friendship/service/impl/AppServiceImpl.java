@@ -7,10 +7,10 @@ import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
 
 import redis.clients.jedis.ShardedJedis;
-import redis.clients.jedis.ShardedJedisPool;
 
 import com.thend.friendship.dao.AppDao;
 import com.thend.friendship.po.User;
+import com.thend.friendship.redis.RedisClient;
 import com.thend.friendship.service.AppService;
 import com.thend.friendship.utils.Const;
 import com.thend.friendship.utils.JsonSerializer;
@@ -21,7 +21,7 @@ public class AppServiceImpl implements AppService {
 	private AppDao appDao;
 	
 	@Resource
-	private ShardedJedisPool shardedJedisPool;
+	private RedisClient redisClient;
 	
 	private static final Log logger = LogFactory.getLog(AppServiceImpl.class);
 
@@ -29,23 +29,31 @@ public class AppServiceImpl implements AppService {
 		logger.info("app service print!");
 	}
 	
-	public User getCachedUserById(long userId) {
-		ShardedJedis shardedJedis = shardedJedisPool.getResource();
-		try {
-			String cachekey = Const.getUserCacheKey(userId);
-			if(shardedJedis.exists(cachekey)) {
-				return JsonSerializer.fromJson(shardedJedis.get(cachekey), User.class);
-			} else {
-				User user = appDao.getUserById(userId);
-				if(user != null) {
-					shardedJedis.set(cachekey, JsonSerializer.toJson(user));
-					return user;
+	public User getCachedUserById(final long userId) {
+		User user = redisClient.execute(new RedisClient.ShardedRedisAction<User>() {
+
+			public User act(ShardedJedis shardedJedis) {
+				String cachekey = Const.getUserCacheKey(userId);
+				if(shardedJedis.exists(cachekey)) {
+					return User.fromJson(shardedJedis.get(cachekey));
 				}
+				return null;
 			}
-		} finally {
-			shardedJedisPool.returnResource(shardedJedis);
+		});
+		if(user == null) {
+			user = appDao.getUserById(userId);
+			if(user != null) {
+				final User dbUser = user;
+				redisClient.execute(new RedisClient.ShardedRedisAction<User>() {
+					public User act(ShardedJedis shardedJedis) {
+						String cachekey = Const.getUserCacheKey(userId);
+						shardedJedis.set(cachekey, dbUser.toJson());
+						return dbUser;
+					}
+				});
+			}
 		}
-		return null;
+		return user;
 	}
 
 }

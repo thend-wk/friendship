@@ -1,4 +1,4 @@
-package com.thend.friendship.utils;
+package com.thend.friendship.redis;
 
 import java.util.ArrayList;
 import java.util.Arrays;

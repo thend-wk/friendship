@@ -6,9 +6,12 @@ import org.springframework.boot.context.properties.ConfigurationProperties;
 public class JdbcProperty {
 	
 	private String driver;
-	private String url;
-	private String username;
-	private String password;
+	private String masterUrl;
+	private String masterUsername;
+	private String masterPassword;
+	private String slaveUrl;
+	private String slaveUsername;
+	private String slavePassword;
 	private int maxIdleTime;
 	private int minPoolSize;
 	private int MaxPoolSize;
@@ -17,24 +20,6 @@ public class JdbcProperty {
 	}
 	public void setDriver(String driver) {
 		this.driver = driver;
-	}
-	public String getUrl() {
-		return url;
-	}
-	public void setUrl(String url) {
-		this.url = url;
-	}
-	public String getUsername() {
-		return username;
-	}
-	public void setUsername(String username) {
-		this.username = username;
-	}
-	public String getPassword() {
-		return password;
-	}
-	public void setPassword(String password) {
-		this.password = password;
 	}
 	public int getMaxIdleTime() {
 		return maxIdleTime;
@@ -53,6 +38,42 @@ public class JdbcProperty {
 	}
 	public void setMaxPoolSize(int maxPoolSize) {
 		MaxPoolSize = maxPoolSize;
+	}
+	public String getMasterUrl() {
+		return masterUrl;
+	}
+	public void setMasterUrl(String masterUrl) {
+		this.masterUrl = masterUrl;
+	}
+	public String getMasterUsername() {
+		return masterUsername;
+	}
+	public void setMasterUsername(String masterUsername) {
+		this.masterUsername = masterUsername;
+	}
+	public String getMasterPassword() {
+		return masterPassword;
+	}
+	public void setMasterPassword(String masterPassword) {
+		this.masterPassword = masterPassword;
+	}
+	public String getSlaveUrl() {
+		return slaveUrl;
+	}
+	public void setSlaveUrl(String slaveUrl) {
+		this.slaveUrl = slaveUrl;
+	}
+	public String getSlaveUsername() {
+		return slaveUsername;
+	}
+	public void setSlaveUsername(String slaveUsername) {
+		this.slaveUsername = slaveUsername;
+	}
+	public String getSlavePassword() {
+		return slavePassword;
+	}
+	public void setSlavePassword(String slavePassword) {
+		this.slavePassword = slavePassword;
 	}
 	
 	

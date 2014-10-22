@@ -2,7 +2,9 @@ package com.thend.friendship.po;
 
 import java.util.Date;
 
-public class User {
+import com.thend.friendship.utils.JsonSerializer;
+
+public class User extends BaseEntity {
 	
 	private long userId;
 	private String userName;
@@ -40,4 +42,7 @@ public class User {
 		this.updateTime = updateTime;
 	}
 
+	public static User fromJson(String json) {
+		return JsonSerializer.fromJson(json, User.class);
+	}
 }

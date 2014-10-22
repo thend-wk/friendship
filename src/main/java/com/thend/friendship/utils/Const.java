@@ -8,24 +8,12 @@ public class Const {
 	
 	public static final String CACHE_USER = "user";
 	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
-	
 	public static String getUserCacheKey(long userId) {
 		return CACHE_USER + "#" + userId;
 	}
+	
+	
+	//mongo
+    public static final String OBJECTID = "_id";
 
 }
