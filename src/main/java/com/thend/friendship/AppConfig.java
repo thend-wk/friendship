@@ -18,8 +18,11 @@ import redis.clients.jedis.JedisPoolConfig;
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mongodb.DB;
 import com.thend.friendship.mongo.MongoDBFactory;
+import com.thend.friendship.mq.RabbitMQListener;
+import com.thend.friendship.mq.RabbitMQSender;
 import com.thend.friendship.property.JdbcProperty;
 import com.thend.friendship.property.MongoProperty;
+import com.thend.friendship.property.RabbitMQProperty;
 import com.thend.friendship.property.RedisProperty;
 import com.thend.friendship.redis.RedisClient;
 import com.thend.friendship.redis.SimpleShardedJedisPool;
@@ -36,6 +39,9 @@ public class AppConfig {
 	
 	@Autowired
 	private MongoProperty mongoProperty;
+	
+	@Autowired
+	private RabbitMQProperty rabbitMQProperty;
 	
 	@Bean
 	public SqlSession masterSqlSession() throws Exception {
@@ -115,6 +121,21 @@ public class AppConfig {
 	}
 	
 	@Bean
+	public RabbitMQListener rabbitMQListener() {
+		RabbitMQListener listener = new RabbitMQListener(rabbitMQProperty.getUri(), 
+				rabbitMQProperty.getExchange(), rabbitMQProperty.getRoutingKey());
+		return listener;
+	}
+	
+	@Bean
+	public RabbitMQSender rabbitMQSender() {
+		RabbitMQSender sender = new RabbitMQSender(rabbitMQProperty.getUri(), 
+				rabbitMQProperty.getExchange());
+		sender.setRoutingKey(rabbitMQProperty.getRoutingKey());
+		return sender;
+	}
+	
+	@Bean
 	public JdbcProperty jdbcProperty() {
 		return new JdbcProperty();
 	}
@@ -127,5 +148,10 @@ public class AppConfig {
 	@Bean
 	public MongoProperty mongoProperty() {
 		return new MongoProperty();
+	}
+	
+	@Bean
+	public RabbitMQProperty rabbitMQProperty() {
+		return new RabbitMQProperty();
 	}
 }

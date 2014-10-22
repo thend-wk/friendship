@@ -35,3 +35,7 @@ redis:
   clusters: localhost:6379
 mongo:
   mongoUrl: mongodb://test:test@123.58.179.105:20998/gendata
+rabbit:
+  uri: amqp://guest:guest@localhost:5672
+  exchange: friendship-route-exchange
+  routingKey: queue-test

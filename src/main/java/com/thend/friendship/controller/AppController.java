@@ -5,9 +5,11 @@ import java.util.List;
 import javax.annotation.Resource;
 
 import org.springframework.web.bind.annotation.RequestMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 
 import com.thend.friendship.mongo.dao.MongoUserDao;
+import com.thend.friendship.mq.RabbitMQSender;
 import com.thend.friendship.po.User;
 import com.thend.friendship.service.AppService;
 
@@ -19,6 +21,9 @@ public class AppController {
 	
 	@Resource
 	private MongoUserDao mongoUserDao;
+	
+	@Resource
+	private RabbitMQSender rabbitMQSender;
 	
 	@RequestMapping("/")
 	String home() {
@@ -42,5 +47,11 @@ public class AppController {
 			System.out.println(user.toJson());
 		}
 	    return null;
+	}
+	
+	@RequestMapping("/sendMessage")
+	void sendMessage(
+			@RequestParam("message") String message) {
+		rabbitMQSender.dispatch(message);
 	}
 }
