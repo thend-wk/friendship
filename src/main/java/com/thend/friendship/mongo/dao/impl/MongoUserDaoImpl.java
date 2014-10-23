@@ -9,11 +9,11 @@ import org.springframework.stereotype.Service;
 
 import com.mongodb.DBCursor;
 import com.mongodb.DBObject;
-import com.thend.friendship.mongo.AbstractMongoDbStorage;
+import com.thend.friendship.mongo.BaseMongoDBStorage;
 import com.thend.friendship.mongo.dao.MongoUserDao;
 import com.thend.friendship.po.User;
 @Service
-public class MongoUserDaoImpl extends AbstractMongoDbStorage<User> implements
+public class MongoUserDaoImpl extends BaseMongoDBStorage<User> implements
 		MongoUserDao {
 	
 	public MongoUserDaoImpl() {

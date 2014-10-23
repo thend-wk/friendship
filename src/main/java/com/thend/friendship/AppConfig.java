@@ -24,8 +24,11 @@ import com.thend.friendship.property.JdbcProperty;
 import com.thend.friendship.property.MongoProperty;
 import com.thend.friendship.property.RabbitMQProperty;
 import com.thend.friendship.property.RedisProperty;
+import com.thend.friendship.property.SolrProperty;
 import com.thend.friendship.redis.RedisClient;
 import com.thend.friendship.redis.SimpleShardedJedisPool;
+import com.thend.friendship.solr.client.SolrPingClient;
+import com.thend.friendship.solr.client.SolrSearchClient;
 import com.thend.friendship.utils.Const;
 
 @Configuration
@@ -43,46 +46,42 @@ public class AppConfig {
 	@Autowired
 	private RabbitMQProperty rabbitMQProperty;
 	
+	@Autowired
+	private SolrProperty solrProperty;
+	
 	@Bean
-	public SqlSession masterSqlSession() throws Exception {
-		ComboPooledDataSource dataSource = new ComboPooledDataSource();
-		dataSource.setDriverClass(jdbcProperty.getDriver());
-		dataSource.setJdbcUrl(jdbcProperty.getMasterUrl());
-		dataSource.setUser(jdbcProperty.getMasterUsername());
-		dataSource.setPassword(jdbcProperty.getMasterPassword());
-		dataSource.setMaxIdleTime(jdbcProperty.getMaxIdleTime());
-		dataSource.setMinPoolSize(jdbcProperty.getMinPoolSize());
-		dataSource.setMaxPoolSize(jdbcProperty.getMaxPoolSize());
-		
-		SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-		sqlSessionFactory.setDataSource(dataSource);
-		List<Resource> resList = new ArrayList<Resource>();
-		resList.add(new ClassPathResource("ibatis/user_sql.xml"));
-		sqlSessionFactory.setMapperLocations(resList.toArray(new Resource[0]));
-		
-		SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory.getObject());
-		return sqlSessionTemplate;
+	public SqlSession masterSqlSession() {
+		return wrapSqlSession(jdbcProperty.getMasterUrl(), jdbcProperty.getMasterUsername(), jdbcProperty.getMasterPassword());
 	}
 	
 	@Bean
-	public SqlSession slaveSqlSession() throws Exception {
-		ComboPooledDataSource dataSource = new ComboPooledDataSource();
-		dataSource.setDriverClass(jdbcProperty.getDriver());
-		dataSource.setJdbcUrl(jdbcProperty.getSlaveUrl());
-		dataSource.setUser(jdbcProperty.getSlaveUsername());
-		dataSource.setPassword(jdbcProperty.getSlavePassword());
-		dataSource.setMaxIdleTime(jdbcProperty.getMaxIdleTime());
-		dataSource.setMinPoolSize(jdbcProperty.getMinPoolSize());
-		dataSource.setMaxPoolSize(jdbcProperty.getMaxPoolSize());
-		
-		SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
-		sqlSessionFactory.setDataSource(dataSource);
-		List<Resource> resList = new ArrayList<Resource>();
-		resList.add(new ClassPathResource("ibatis/user_sql.xml"));
-		sqlSessionFactory.setMapperLocations(resList.toArray(new Resource[0]));
-		
-		SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory.getObject());
-		return sqlSessionTemplate;
+	public SqlSession slaveSqlSession() {
+		return wrapSqlSession(jdbcProperty.getSlaveUrl(), jdbcProperty.getSlaveUsername(), jdbcProperty.getSlavePassword());
+	}
+	
+	private SqlSession wrapSqlSession(String jdbcUrl, String username, String password) {
+		try {
+			ComboPooledDataSource dataSource = new ComboPooledDataSource();
+			dataSource.setJdbcUrl(jdbcUrl);
+			dataSource.setJdbcUrl(username);
+			dataSource.setJdbcUrl(password);
+			dataSource.setDriverClass(jdbcProperty.getDriver());
+			dataSource.setMaxIdleTime(jdbcProperty.getMaxIdleTime());
+			dataSource.setMinPoolSize(jdbcProperty.getMinPoolSize());
+			dataSource.setMaxPoolSize(jdbcProperty.getMaxPoolSize());
+			
+			SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
+			sqlSessionFactory.setDataSource(dataSource);
+			List<Resource> resList = new ArrayList<Resource>();
+			resList.add(new ClassPathResource("ibatis/user_sql.xml"));
+			sqlSessionFactory.setMapperLocations(resList.toArray(new Resource[0]));
+			
+			SqlSessionTemplate sqlSessionTemplate = new SqlSessionTemplate(sqlSessionFactory.getObject());
+			return sqlSessionTemplate;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
 	}
 	
 	public JedisPool soloJedisPool() {
@@ -136,6 +135,18 @@ public class AppConfig {
 	}
 	
 	@Bean
+	public SolrPingClient solrPingClient() {
+		SolrPingClient client = new SolrPingClient(solrProperty.getPingUrl());
+		return client;
+	}
+	
+	@Bean
+	public SolrSearchClient solrSearchClient() {
+		SolrSearchClient client = new SolrSearchClient(solrProperty.getSearchUrl());
+		return client;
+	}
+	
+	@Bean
 	public JdbcProperty jdbcProperty() {
 		return new JdbcProperty();
 	}
@@ -153,5 +164,10 @@ public class AppConfig {
 	@Bean
 	public RabbitMQProperty rabbitMQProperty() {
 		return new RabbitMQProperty();
+	}
+	
+	@Bean
+	public SolrProperty solrProperty() {
+		return new SolrProperty();
 	}
 }

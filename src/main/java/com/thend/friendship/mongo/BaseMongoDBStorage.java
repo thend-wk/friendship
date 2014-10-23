@@ -23,9 +23,9 @@ import com.mongodb.DBObject;
 import com.mongodb.WriteResult;
 import com.thend.friendship.utils.Const;
 
-public abstract class AbstractMongoDbStorage<T> {
+public abstract class BaseMongoDBStorage<T> {
     
-    private static final Log logger = LogFactory.getLog(AbstractMongoDbStorage.class);
+    private static final Log logger = LogFactory.getLog(BaseMongoDBStorage.class);
     
     private String collectionName;
 
