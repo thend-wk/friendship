@@ -21,7 +21,7 @@ jdbc:
   slavePassword: 123456
   driver: com.mysql.jdbc.Driver
   maxIdleTime: 25000
-  minPoolSize: 100
+  minPoolSize: 10
   maxPoolSize: 200
 redis:
   host: localhost
@@ -36,9 +36,10 @@ redis:
 mongo:
   mongoUrl: mongodb://test:test@123.58.179.105:20998/gendata
 rabbit:
-  uri: amqp://guest:guest@localhost:5672
+  uri: amqp://guest:guest@123.58.179.154:5672
   exchange: friendship-route-exchange
   routingKey: queue-test
+  clusters: 123.58.179.154:5672,123.58.179.155:5672
 solr:
   pingUrl: http://10.120.41.222:8983/solr/collection1/update
   searchUrl: http://10.120.41.222:8983/solr/collection1/select

@@ -17,6 +17,7 @@ import redis.clients.jedis.JedisPoolConfig;
 
 import com.mchange.v2.c3p0.ComboPooledDataSource;
 import com.mongodb.DB;
+import com.rabbitmq.client.Address;
 import com.thend.friendship.mongo.MongoDBFactory;
 import com.thend.friendship.mq.RabbitMQListener;
 import com.thend.friendship.mq.RabbitMQSender;
@@ -63,8 +64,8 @@ public class AppConfig {
 		try {
 			ComboPooledDataSource dataSource = new ComboPooledDataSource();
 			dataSource.setJdbcUrl(jdbcUrl);
-			dataSource.setJdbcUrl(username);
-			dataSource.setJdbcUrl(password);
+			dataSource.setUser(username);
+			dataSource.setPassword(password);
 			dataSource.setDriverClass(jdbcProperty.getDriver());
 			dataSource.setMaxIdleTime(jdbcProperty.getMaxIdleTime());
 			dataSource.setMinPoolSize(jdbcProperty.getMinPoolSize());
@@ -122,16 +123,30 @@ public class AppConfig {
 	@Bean
 	public RabbitMQListener rabbitMQListener() {
 		RabbitMQListener listener = new RabbitMQListener(rabbitMQProperty.getUri(), 
-				rabbitMQProperty.getExchange(), rabbitMQProperty.getRoutingKey());
+				rabbitMQProperty.getExchange(), rabbitMQProperty.getRoutingKey(), getRabbitAddr());
 		return listener;
 	}
 	
 	@Bean
 	public RabbitMQSender rabbitMQSender() {
 		RabbitMQSender sender = new RabbitMQSender(rabbitMQProperty.getUri(), 
-				rabbitMQProperty.getExchange());
+				rabbitMQProperty.getExchange(), getRabbitAddr());
 		sender.setRoutingKey(rabbitMQProperty.getRoutingKey());
 		return sender;
+	}
+	
+	private Address[] getRabbitAddr() {
+		List<Address> addList = new ArrayList<Address>();
+		String clusters = rabbitMQProperty.getClusters();
+		String[] hostPortPairs = clusters.split(",");
+		for(String hostPortPair : hostPortPairs) {
+			String[] items = hostPortPair.split(":");
+			if(items.length > 1) {
+				Address addr = new Address(items[0], Integer.parseInt(items[1]));
+				addList.add(addr);
+			}
+		}
+		return addList.toArray(new Address[0]);
 	}
 	
 	@Bean

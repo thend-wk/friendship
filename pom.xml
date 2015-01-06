@@ -15,6 +15,7 @@
 		<mybatis.version>3.2.3</mybatis.version>
 		<spring.version>4.0.3.RELEASE</spring.version>
 		<mybatis-spring.version>1.2.1</mybatis-spring.version>
+		<jetty.version>9.0.5.v20130815</jetty.version>
 	</properties>
 
 	<build>
@@ -156,6 +157,11 @@
 			<artifactId>mysql-connector-java</artifactId>
 			<version>5.1.21</version>
 		</dependency>
+		 <dependency>
+			<groupId>org.springframework</groupId>
+			<artifactId>spring-jdbc</artifactId>
+			<version>${spring.version}</version>
+		</dependency>
 		<dependency>
 			<groupId>com.mchange</groupId>
 			<artifactId>c3p0</artifactId>
@@ -164,11 +170,6 @@
 		<dependency>
 			<groupId>org.springframework</groupId>
 			<artifactId>spring-tx</artifactId>
-			<version>${spring.version}</version>
-		</dependency>
-		<dependency>
-			<groupId>org.springframework</groupId>
-			<artifactId>spring-jdbc</artifactId>
 			<version>${spring.version}</version>
 		</dependency>
 		<dependency>
@@ -206,6 +207,24 @@
 			<artifactId>httpclient</artifactId>
 			<version>4.3</version>
 		</dependency>
+		<!-- To write basic websockets against -->
+	 	<dependency>
+	      <groupId>org.eclipse.jetty.websocket</groupId>
+	      <artifactId>websocket-api</artifactId>
+	      <version>9.2.2.v20140723</version>
+	    </dependency>
+	    <!-- To run websockets in embedded server -->
+	    <dependency>
+	      <groupId>org.eclipse.jetty.websocket</groupId>
+	      <artifactId>websocket-server</artifactId>
+	      <version>9.2.2.v20140723</version>
+	    </dependency>
+	    <!-- To run websockets client -->
+	    <dependency>
+	      <groupId>org.eclipse.jetty.websocket</groupId>
+	      <artifactId>websocket-client</artifactId>
+	      <version>9.2.2.v20140723</version>
+	    </dependency>
 	</dependencies>
 
 	<repositories>

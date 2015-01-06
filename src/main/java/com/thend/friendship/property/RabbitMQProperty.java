@@ -8,6 +8,7 @@ public class RabbitMQProperty {
 	private String uri;
 	private String exchange;
 	private String routingKey;
+	private String clusters;
 	public String getUri() {
 		return uri;
 	}
@@ -25,6 +26,12 @@ public class RabbitMQProperty {
 	}
 	public void setRoutingKey(String routingKey) {
 		this.routingKey = routingKey;
+	}
+	public String getClusters() {
+		return clusters;
+	}
+	public void setClusters(String clusters) {
+		this.clusters = clusters;
 	}
 	
 
