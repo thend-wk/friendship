@@ -3,15 +3,16 @@ server:
   port: 8090
   address: 127.0.0.1
   sessionTimeout: 30
-  contextPath: 
+  contextPath:
 
-# Tomcat specifics
-tomcat:
-  accessLogEnabled: true
-  protocolHeader: x-forwarded-proto
-  remoteIpHeader: x-forwarded-for
-  basedir: 
-  backgroundProcessorDelay: 30 # secs
+  # Tomcat specifics
+  tomcat:
+    accessLogEnabled: true
+    accessLogPattern: "%h %{x-forwarded-for}i %{Referer}i %l %u %t \"%r\" %s %b %D"
+    protocolHeader: x-forwarded-proto
+    remoteIpHeader: x-forwarded-for
+    basedir:
+    backgroundProcessorDelay: 10 # secs
 jdbc:
   masterUrl: jdbc:mysql://localhost:3306/test?useUnicode=true&amp;characterEncoding=UTF-8&amp;zeroDateTimeBehavior=convertToNull
   masterUsername: root
