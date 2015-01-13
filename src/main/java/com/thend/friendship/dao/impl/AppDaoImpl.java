@@ -20,5 +20,9 @@ public class AppDaoImpl extends BaseORMDao<User> implements AppDao {
 		params.put("userId", userId);
 		return queryForEntry("getUserById", params);
 	}
+	
+	public int insertUser(User user) {
+		return insert(user);
+	}
 
 }

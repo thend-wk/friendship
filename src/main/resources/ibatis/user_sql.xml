@@ -17,4 +17,8 @@
 		where user_id = #{userId}
 	</select>
 	
+	<insert id="insert" parameterType="com.thend.friendship.po.User">
+		insert into user_account(user_id,user_name,user_age,create_time,update_time)
+		values(#{userId},#{userName},#{userAge},now(),now())
+	</insert>
 </mapper>

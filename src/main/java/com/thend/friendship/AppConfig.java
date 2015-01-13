@@ -3,6 +3,8 @@ package com.thend.friendship;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.sql.DataSource;
+
 import org.apache.ibatis.session.SqlSession;
 import org.mybatis.spring.SqlSessionFactoryBean;
 import org.mybatis.spring.SqlSessionTemplate;
@@ -11,6 +13,7 @@ import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.core.io.ClassPathResource;
 import org.springframework.core.io.Resource;
+import org.springframework.jdbc.datasource.DataSourceTransactionManager;
 
 import redis.clients.jedis.JedisPool;
 import redis.clients.jedis.JedisPoolConfig;
@@ -50,17 +53,20 @@ public class AppConfig {
 	@Autowired
 	private SolrProperty solrProperty;
 	
+	@Autowired
+	private DataSource masterDataSource;
+	
 	@Bean
 	public SqlSession masterSqlSession() {
-		return wrapSqlSession(jdbcProperty.getMasterUrl(), jdbcProperty.getMasterUsername(), jdbcProperty.getMasterPassword());
+		return wrapSqlSession(masterDataSource);
 	}
 	
 	@Bean
 	public SqlSession slaveSqlSession() {
-		return wrapSqlSession(jdbcProperty.getSlaveUrl(), jdbcProperty.getSlaveUsername(), jdbcProperty.getSlavePassword());
+		return wrapSqlSession(wrapDataSource(jdbcProperty.getSlaveUrl(), jdbcProperty.getSlaveUsername(), jdbcProperty.getSlavePassword()));
 	}
 	
-	private SqlSession wrapSqlSession(String jdbcUrl, String username, String password) {
+	private DataSource wrapDataSource(String jdbcUrl, String username, String password) {
 		try {
 			ComboPooledDataSource dataSource = new ComboPooledDataSource();
 			dataSource.setJdbcUrl(jdbcUrl);
@@ -70,7 +76,15 @@ public class AppConfig {
 			dataSource.setMaxIdleTime(jdbcProperty.getMaxIdleTime());
 			dataSource.setMinPoolSize(jdbcProperty.getMinPoolSize());
 			dataSource.setMaxPoolSize(jdbcProperty.getMaxPoolSize());
-			
+			return dataSource;
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return null;
+	}
+	
+	private SqlSession wrapSqlSession(DataSource dataSource) {
+		try{
 			SqlSessionFactoryBean sqlSessionFactory = new SqlSessionFactoryBean();
 			sqlSessionFactory.setDataSource(dataSource);
 			List<Resource> resList = new ArrayList<Resource>();
@@ -184,5 +198,10 @@ public class AppConfig {
 	@Bean
 	public SolrProperty solrProperty() {
 		return new SolrProperty();
+	}
+	
+	@Bean
+	public DataSource masterDataSource() {
+		return wrapDataSource(jdbcProperty.getMasterUrl(), jdbcProperty.getMasterUsername(), jdbcProperty.getMasterPassword());
 	}
 }

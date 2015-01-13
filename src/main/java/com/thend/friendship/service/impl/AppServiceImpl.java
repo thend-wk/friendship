@@ -5,6 +5,7 @@ import javax.annotation.Resource;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
 
 import redis.clients.jedis.ShardedJedis;
 
@@ -55,5 +56,18 @@ public class AppServiceImpl implements AppService {
 		}
 		return user;
 	}
+	
 
+	public User getUserById(long userId) {
+		return appDao.getUserById(userId);
+	}
+	
+	public void testTx() throws Exception {
+		User user = new User();
+		user.setUserName("michael");
+		user.setUserId(3L);
+		user.setUserAge(38);
+		appDao.insertUser(user);
+		throw new RuntimeException("test transation!");
+	}
 }

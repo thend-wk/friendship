@@ -32,16 +32,32 @@ public class AppController {
 	
 	@RequestMapping("/print")
 	void print() {
-		appService.print();
+		try {
+			appService.testTx();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 	
-	@RequestMapping("/user")
-	User user() {
+	@RequestMapping("/userCache")
+	User userCache() {
+		User user = appService.getCachedUserById(2L);
+		return user;
+	}
+	
+	@RequestMapping("/userDB")
+	User userDB() {
+		User user = appService.getUserById(1L);
+		return user;
+	}
+	
+	@RequestMapping("/userMongo")
+	User userMongo() {
 //		User user = appService.getCachedUserById(2L);
 //		mongoUserDao.insert(user);
 //	    String _id = "5446436034c2203a133b3d13";
 //	    User user = mongoUserDao.getUserById(_id);
-		mongoUserDao.listAll();
+//		mongoUserDao.listAll();
 		List<User> users = mongoUserDao.selectUserByAge(27);
 		for(User user : users) {
 			System.out.println(user.toJson());
