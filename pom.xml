@@ -75,7 +75,7 @@
 							<!-- Classpath is added to the manifest of the created jar file. -->
 							<addClasspath>true</addClasspath>
 							<classpathPrefix>./</classpathPrefix>
-							<mainClass>com.thend.friendship.App</mainClass>
+							<mainClass>com.thend.friendship.AppServer</mainClass>
 						</manifest>
 					</archive>
 				</configuration>

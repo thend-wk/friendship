@@ -26,9 +26,7 @@ public class AppServer
 {
 	private static final String DEFAULT_PORT = "8090";
 	private static final String DEFAULT_ACCESS_LOG_PATH = "../logs/access-log.yyyy_mm_dd";
-	private static final String WEB_XML = "webapp/WEB-INF/web.xml";
-	private static final String CLASS_ONLY_AVAILABLE_IN_IDE = "com.sjl.IDE";
-	private static final String PROJECT_RELATIVE_PATH_TO_WEBAPP = "src/main/resources/webapp";
+	private static final String WEBAPP_PATH = "webapp";
 
 	private Server server;
 	private int port;
@@ -65,15 +63,16 @@ public class AppServer
 	public void stop() throws Exception {
 		server.stop();
 	}
+	
+	private URL getResource(String aResource) {
+		return Thread.currentThread().getContextClassLoader()
+				.getResource(aResource);
+	}
 
 	private HandlerCollection createHandlers() {
 		WebAppContext ctx = new WebAppContext();
 		ctx.setContextPath("/");
-		if (isRunningInShadedJar()) {
-			ctx.setWar(getShadedWarUrl());
-		} else {
-			ctx.setWar(PROJECT_RELATIVE_PATH_TO_WEBAPP);
-		}
+		ctx.setWar(getResource(WEBAPP_PATH).toString());
 		List<Handler> handlers = new ArrayList<Handler>();
 		handlers.add(ctx);
 
@@ -100,25 +99,6 @@ public class AppServer
 		log.setLogTimeZone("GMT+8");
 		log.setLogLatency(true);
 		return log;
-	}
-
-	private boolean isRunningInShadedJar() {
-		try {
-			Class.forName(CLASS_ONLY_AVAILABLE_IN_IDE);
-			return false;
-		} catch (ClassNotFoundException anExc) {
-			return true;
-		}
-	}
-
-	private URL getResource(String aResource) {
-		return Thread.currentThread().getContextClassLoader()
-				.getResource(aResource);
-	}
-
-	private String getShadedWarUrl() {
-		String url = getResource(WEB_XML).toString();
-		return url.substring(0, url.length() - 15);
 	}
 
 	public static void main(String[] args) throws Exception {
