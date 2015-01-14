@@ -10,6 +10,8 @@ import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
 
+import org.apache.commons.logging.Log;
+import org.apache.commons.logging.LogFactory;
 import org.apache.http.Consts;
 import org.apache.http.HttpStatus;
 import org.apache.http.NameValuePair;
@@ -25,8 +27,6 @@ import org.apache.http.impl.client.HttpClients;
 import org.apache.http.impl.conn.PoolingHttpClientConnectionManager;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.util.EntityUtils;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 public class HttpUtil {
 
@@ -37,7 +37,7 @@ public class HttpUtil {
 
 	private static CloseableHttpClient client;
 	private static RequestConfig requestConfig;
-	private static Logger log = LoggerFactory.getLogger(HttpUtil.class);
+	private static Log log = LogFactory.getLog(HttpUtil.class);
 	private static ExecutorService executorService;
 
 	static {

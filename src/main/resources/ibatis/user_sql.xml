@@ -21,4 +21,9 @@
 		insert into user_account(user_id,user_name,user_age,create_time,update_time)
 		values(#{userId},#{userName},#{userAge},now(),now())
 	</insert>
+
+	<update id="updateUserAge" parameterType="map">
+		update user_account set user_age = #{age}
+		where user_id = #{userId}
+	</update>
 </mapper>

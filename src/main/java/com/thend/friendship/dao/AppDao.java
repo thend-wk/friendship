@@ -7,5 +7,7 @@ public interface AppDao {
 	public int insertUser(User user);
 	
 	public User getUserById(long userId);
+	
+	public int updateUserAge(long userId, int age);
 
 }

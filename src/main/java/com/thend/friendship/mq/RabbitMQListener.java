@@ -3,33 +3,24 @@ package com.thend.friendship.mq;
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
 
-import com.rabbitmq.client.Address;
 import com.rabbitmq.client.Channel;
 import com.rabbitmq.client.Connection;
 import com.rabbitmq.client.ConnectionFactory;
 import com.rabbitmq.client.QueueingConsumer;
 import com.rabbitmq.client.ShutdownSignalException;
 
-public class RabbitMQListener {
+public class RabbitMQListener extends RabbitMQ {
 
 	private static final Log logger = LogFactory.getLog(RabbitMQListener.class);
-
-	private String uri;
-
-	private String exchange;
-
-	private String routingKey;
-	
-	private Address[] addrArr;
 	
 	private QueueingConsumer consumer;
 
 	public RabbitMQListener(String uri, String exchange, 
-			String routingKey, Address[] addrArr) {
+			String routingKey, String clusterAddr) {
 		this.uri = uri;
 		this.exchange = exchange;
 		this.routingKey = routingKey;
-		this.addrArr = addrArr;
+		this.addrArr = getRabbitAddr(clusterAddr);
 		Thread t = new Thread(new Runnable() {
 			
 			public void run() {

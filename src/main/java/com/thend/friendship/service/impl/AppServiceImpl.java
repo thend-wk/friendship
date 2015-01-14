@@ -14,7 +14,6 @@ import com.thend.friendship.po.User;
 import com.thend.friendship.redis.RedisClient;
 import com.thend.friendship.service.AppService;
 import com.thend.friendship.utils.Const;
-import com.thend.friendship.utils.JsonSerializer;
 @Service
 public class AppServiceImpl implements AppService {
 	
@@ -62,12 +61,13 @@ public class AppServiceImpl implements AppService {
 		return appDao.getUserById(userId);
 	}
 	
-	public void testTx() throws Exception {
+	@Transactional
+	public void testTx() {
+		appDao.updateUserAge(2L, 100);
 		User user = new User();
 		user.setUserName("michael");
 		user.setUserId(3L);
 		user.setUserAge(38);
 		appDao.insertUser(user);
-		throw new RuntimeException("test transation!");
 	}
 }

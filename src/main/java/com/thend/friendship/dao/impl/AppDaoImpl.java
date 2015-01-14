@@ -25,4 +25,10 @@ public class AppDaoImpl extends BaseORMDao<User> implements AppDao {
 		return insert(user);
 	}
 
+	public int updateUserAge(long userId, int age) {
+		Map<String,Object> params = new HashMap<String,Object>();
+		params.put("userId", userId);
+		params.put("age", age);
+		return update("updateUserAge", params);
+	}
 }
