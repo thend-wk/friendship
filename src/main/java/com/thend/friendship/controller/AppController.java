@@ -12,9 +12,12 @@ import com.thend.friendship.mongo.dao.MongoUserDao;
 import com.thend.friendship.mq.RabbitMQSender;
 import com.thend.friendship.po.User;
 import com.thend.friendship.service.AppService;
-
+import com.thend.friendship.service.UserService;
 @RestController
 public class AppController {
+	
+	@Resource
+	private UserService userService;
 	
 	@Resource
 	private AppService appService;
@@ -41,13 +44,13 @@ public class AppController {
 	
 	@RequestMapping("/userCache")
 	User userCache() {
-		User user = appService.getCachedUserById(2L);
+		User user = userService.getCachedUserById(2L);
 		return user;
 	}
 	
 	@RequestMapping("/userDB")
 	User userDB() {
-		User user = appService.getUserById(1L);
+		User user = userService.getUserById(1L);
 		return user;
 	}
 	

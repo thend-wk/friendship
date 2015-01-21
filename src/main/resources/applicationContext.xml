@@ -23,6 +23,7 @@
 	<!-- 扫描如下包 -->
 	<context:component-scan base-package="com.thend.friendship.dao"/>
 	<context:component-scan base-package="com.thend.friendship.mongo.dao"/>
+	<context:component-scan base-package="com.thend.friendship.cache"/>
 	<context:component-scan base-package="com.thend.friendship.service"/>
 	<context:component-scan base-package="com.thend.friendship.controller"/>
 	
@@ -192,5 +193,17 @@
 		<constructor-arg value="${rabbit.exchange}"/>
 		<constructor-arg value="${rabbit.routingKey}"/>
 		<constructor-arg value="${rabbit.cluster}"/>
+	</bean>
+	
+	<bean id="autoProxyCreator"  class="org.springframework.aop.framework.autoproxy.DefaultAdvisorAutoProxyCreator" p:exposeProxy="true" p:order="0" p:proxyTargetClass="true"></bean>
+	<!-- 配置化缓存 -->
+	<bean id="generalRedisCacheAdvice" class="com.thend.friendship.cache.GeneralRedisCacheAdvice" />
+	<bean class="com.thend.friendship.cache.GeneralRedisCacheAdvisor">
+		<property name="advice" ref="generalRedisCacheAdvice" />
+		<property name="filteredClass">
+			<list>
+				<value>com.thend.friendship.service.impl.UserServiceImpl</value>
+			</list>
+		</property>
 	</bean>
 </beans>
