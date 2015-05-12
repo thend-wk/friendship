@@ -73,5 +73,16 @@ public class RedisClient {
 		T act(ShardedJedis shardedJedis);
 	}
 	
+	public static void main(String[] args) {
+		RedisClient redisClient = new RedisClient();
+		redisClient.execute(new SoloRedisAction<Boolean>() {
+
+			public Boolean act(Jedis soloJedis) {
+				// TODO Auto-generated method stub
+				return true;
+			}
+			
+		});
+	}
 
 }

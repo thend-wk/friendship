@@ -1,6 +1,8 @@
 package com.thend.friendship.utils;
 
 import java.io.IOException;
+import java.security.cert.CertificateException;
+import java.security.cert.X509Certificate;
 import java.util.Arrays;
 import java.util.concurrent.Callable;
 import java.util.concurrent.ExecutionException;
@@ -9,6 +11,8 @@ import java.util.concurrent.Future;
 import java.util.concurrent.LinkedBlockingQueue;
 import java.util.concurrent.ThreadPoolExecutor;
 import java.util.concurrent.TimeUnit;
+
+import javax.net.ssl.SSLContext;
 
 import org.apache.commons.logging.Log;
 import org.apache.commons.logging.LogFactory;
@@ -21,6 +25,9 @@ import org.apache.http.client.methods.CloseableHttpResponse;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.config.ConnectionConfig;
+import org.apache.http.conn.ssl.SSLConnectionSocketFactory;
+import org.apache.http.conn.ssl.SSLContextBuilder;
+import org.apache.http.conn.ssl.TrustStrategy;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
@@ -41,18 +48,30 @@ public class HttpUtil {
 	private static ExecutorService executorService;
 
 	static {
-		ConnectionConfig connectionConfig = ConnectionConfig.custom()
-				.setCharset(Consts.UTF_8).build();
-		PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
-		connManager.setDefaultConnectionConfig(connectionConfig);
-		connManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
-		requestConfig = RequestConfig.custom()
-				.setConnectTimeout(CONNECTION_TIMEOUT)
-				.setSocketTimeout(SOCKET_TIMEOUT)
-				.setConnectionRequestTimeout(CONNECTION_MANAGER_TIMEOUT)
-				.build();
-		client = HttpClients.custom().setConnectionManager(connManager).setDefaultRequestConfig(requestConfig).build();
-		executorService = new ThreadPoolExecutor(0,2,10,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(1000),new ThreadPoolExecutor.CallerRunsPolicy());
+		try {
+			ConnectionConfig connectionConfig = ConnectionConfig.custom()
+					.setCharset(Consts.UTF_8).build();
+			PoolingHttpClientConnectionManager connManager = new PoolingHttpClientConnectionManager();
+			connManager.setDefaultConnectionConfig(connectionConfig);
+			connManager.setMaxTotal(MAX_TOTAL_CONNECTIONS);
+			requestConfig = RequestConfig.custom()
+					.setConnectTimeout(CONNECTION_TIMEOUT)
+					.setSocketTimeout(SOCKET_TIMEOUT)
+					.setConnectionRequestTimeout(CONNECTION_MANAGER_TIMEOUT)
+					.build();
+			SSLContext sslContext = new SSLContextBuilder().loadTrustMaterial(null, new TrustStrategy() {
+	            //信任所有
+	            public boolean isTrusted(X509Certificate[] chain, String authType) 
+	            		throws CertificateException {
+	                return true;
+	            }
+	        }).build();
+	        SSLConnectionSocketFactory sslsf = new SSLConnectionSocketFactory(sslContext);
+			client = HttpClients.custom().setConnectionManager(connManager).setSSLSocketFactory(sslsf).setDefaultRequestConfig(requestConfig).build();
+			executorService = new ThreadPoolExecutor(0,2,10,TimeUnit.SECONDS,new LinkedBlockingQueue<Runnable>(1000),new ThreadPoolExecutor.CallerRunsPolicy());
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	public static String get(String url) {
@@ -121,7 +140,7 @@ public class HttpUtil {
 		return String.valueOf(HttpStatus.SC_INTERNAL_SERVER_ERROR);
 	}
 	
-	public static Future<String> postAsyn(final String url, final NameValuePair... params){
+	public static Future<String> postAsyn(final String url, final NameValuePair... params) {
 		return executorService.submit(new Callable<String>() {
 
 			public String call() throws Exception {
